@@ -10,7 +10,9 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 # Define IOC regular expressions
 IP_REGEX = r'\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b'
 URL_REGEX = r'(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-?=%.]+'
-EMAIL_REGEX = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+# The TLD class is A-Za-z on purpose: [A-Z|a-z] would also match a literal
+# pipe character, so an address with a | in its final part passed as valid.
+EMAIL_REGEX = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b'
 MD5_REGEX = r'\b[0-9a-fA-F]{32}\b'
 SHA1_REGEX = r'\b[0-9a-fA-F]{40}\b'
 SHA256_REGEX = r'\b[0-9a-fA-F]{64}\b'
@@ -57,21 +59,26 @@ def extract_iocs(text, ioc_type='all'):
         'domain': []
     }
 
+    # One string can legitimately appear under several types (an IP also
+    # matches the URL and domain patterns). Dedup is within a type only;
+    # dropping the cross type repeats would hide how the text reads.
+    # sorted() because set order is hash dependent: two runs over the same
+    # file should produce the same report, row for row.
     try:
         if ioc_type in ('ip', 'all'):
-            iocs['ip'] = list(set(re.findall(IP_REGEX, text)))
+            iocs['ip'] = sorted(set(re.findall(IP_REGEX, text)))
         if ioc_type in ('url', 'all'):
-            iocs['url'] = list(set(re.findall(URL_REGEX, text)))
+            iocs['url'] = sorted(set(re.findall(URL_REGEX, text)))
         if ioc_type in ('email', 'all'):
-            iocs['email'] = list(set(re.findall(EMAIL_REGEX, text)))
+            iocs['email'] = sorted(set(re.findall(EMAIL_REGEX, text)))
         if ioc_type in ('md5', 'all'):
-            iocs['md5'] = list(set(re.findall(MD5_REGEX, text)))
+            iocs['md5'] = sorted(set(re.findall(MD5_REGEX, text)))
         if ioc_type in ('sha1', 'all'):
-            iocs['sha1'] = list(set(re.findall(SHA1_REGEX, text)))
+            iocs['sha1'] = sorted(set(re.findall(SHA1_REGEX, text)))
         if ioc_type in ('sha256', 'all'):
-            iocs['sha256'] = list(set(re.findall(SHA256_REGEX, text)))
+            iocs['sha256'] = sorted(set(re.findall(SHA256_REGEX, text)))
         if ioc_type in ('domain', 'all'):
-            iocs['domain'] = list(set(re.findall(DOMAIN_REGEX, text)))
+            iocs['domain'] = sorted(set(re.findall(DOMAIN_REGEX, text)))
 
     except Exception as e:
         logging.error(f"Error during IOC extraction: {e}")
@@ -145,20 +152,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-# Usage examples:
-# 1. Extract all IOCs from a file:
-#    python main.py input.txt
-#
-# 2. Extract only IP addresses from a file and save to output.csv:
-#    python main.py input.txt -o output.csv -i ip
-#
-# 3. Extract all IOCs from stdin:
-#    cat input.txt | python main.py -
-#
-# 4. Verbose mode (debug logging):
-#    python main.py input.txt -v
-#
-# 5. Quiet mode (only errors are printed):
-#   python main.py input.txt -q
