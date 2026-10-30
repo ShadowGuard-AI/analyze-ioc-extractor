@@ -1,3 +1,5 @@
+![Banner](banner.png)
+
 # analyze-ioc-extractor
 Extracts Indicators of Compromise (IOCs) such as IP addresses, URLs, and email addresses from text files or standard input using regular expressions. Supports common IOC formats. - Focused on Data analysis and reporting
 
