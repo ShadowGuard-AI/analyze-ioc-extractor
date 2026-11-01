@@ -17,6 +17,12 @@ MD5_REGEX = r'\b[0-9a-fA-F]{32}\b'
 SHA1_REGEX = r'\b[0-9a-fA-F]{40}\b'
 SHA256_REGEX = r'\b[0-9a-fA-F]{64}\b'
 DOMAIN_REGEX = r'\b(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}\b'
+# What this set does not see at all: IPv6 addresses, defanged text of
+# the hxxp or dot-bracket kind that reports actually circulate, and
+# hashes longer than 64 characters. The URL pattern also has no scheme
+# requirement, so a plain file name with an extension reads as a URL.
+# I extract what is written in standard form and say so, rather than
+# guessing at every obfuscation a source might use.
 
 
 def setup_argparse():
@@ -71,6 +77,10 @@ def extract_iocs(text, ioc_type='all'):
             iocs['url'] = sorted(set(re.findall(URL_REGEX, text)))
         if ioc_type in ('email', 'all'):
             iocs['email'] = sorted(set(re.findall(EMAIL_REGEX, text)))
+        # The word boundaries around the hash patterns are what stop
+        # a SHA256 from also being reported as an MD5 and a SHA1: the
+        # shorter pattern cannot end mid string because the next
+        # character is still a hex digit, so no boundary exists there.
         if ioc_type in ('md5', 'all'):
             iocs['md5'] = sorted(set(re.findall(MD5_REGEX, text)))
         if ioc_type in ('sha1', 'all'):
@@ -133,6 +143,11 @@ def main():
 
         df = pd.DataFrame(data)
 
+        # With no finds, data is empty and this frame has no columns,
+        # so the CSV form is an empty file with no header row and the
+        # console form is the Empty DataFrame text. A reader cannot
+        # tell that apart from a broken run by the output alone; the
+        # exit code stays 0 either way.
         # Output results to file or stdout
         if args.output:
             try:
