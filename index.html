@@ -3,164 +3,86 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Analyze Ioc Extractor: what it is, how it runs, where it stops</title>
-<meta name="description" content="Analyze Ioc Extractor is one of my projects. The README in the repo is short, so this page sticks to what the files themselves show.">
+<title>analyze-ioc-extractor: The Night Ferry Ticket Office</title>
+<meta name="description" content="analyze-ioc-extractor extracts Indicators of Compromise such as IP addresses, URLs, and email addresses from a text file or standard input, using regular expressions.">
 <style>
-:root {
-  --bg: #1e2014; --panel: #2c2e1e; --ink: #eeecdc;
-  --mut: #3b3e28;
-  --acc: #ceb25c; --acc2: #b2603e;
-  --line: #2c2e1e;
-}
-* { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--ink);
-  font-family: 'Book Antiqua', Georgia, serif; line-height: 1.55; }
-code, pre, .mono { font-family: 'Andale Mono', monospace; }
-a { color: var(--acc2); }
-.hero { padding: 3rem 6vw 1rem; }
-.hero img.banner { width: 100%; height: auto; border: 1px solid var(--line);
-  border-radius: 10px; }
-.logo { width: 92px; height: 92px; border-radius: 18px;
-  border: 1px solid var(--line); }
-h1 { font-size: 2.4rem; margin: 0.4em 0 0.1em; }
-h2 { border-bottom: 2px solid var(--acc); padding-bottom: 0.2em;
-  margin-top: 2em; }
-.lede { font-size: 1.15rem; max-width: 62ch; }
-main { padding: 0 6vw 3rem; max-width: 1180px; margin: 0 auto; }
-.grid { display: grid; gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
-.card { background: var(--panel); border: 1px solid var(--line);
-  border-radius: 12px; padding: 1rem 1.2rem; }
-.card.pop { animation: rise 0.7s ease both; }
-@keyframes rise { from { opacity: 0; transform: translateY(14px); }
-  to { opacity: 1; transform: none; } }
-pre.code { background: #101014; color: #e8e6df; padding: 1rem 1.2rem;
-  border-radius: 12px; overflow-x: auto; font-size: 0.86rem;
-  border-left: 5px solid var(--acc); }
-table { border-collapse: collapse; width: 100%; }
-td, th { border-bottom: 1px solid var(--line); padding: 0.45rem 0.6rem;
-  text-align: left; }
-.shots { display: grid; gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
-.shots img { width: 100%; height: auto; border: 1px solid var(--line);
-  border-radius: 10px; background: #f4f1e8; }
-footer { padding: 2rem 6vw; border-top: 1px solid var(--line);
-  color: var(--mut); }
-.rail { display: flex; gap: 1.2rem; align-items: flex-start; }
-.rail nav { position: sticky; top: 1rem; min-width: 180px; }
-@media (max-width: 760px) { .rail { flex-direction: column; }
-  .rail nav { position: static; } }
-@media (prefers-reduced-motion: reduce) {
-  .card.pop { animation: none; } * { scroll-behavior: auto; } }
+@font-face{font-family:'Briem Hand';src:url('fonts/BriemHand.ttf') format('truetype');}
+@font-face{font-family:'Archivo';src:url('fonts/Archivo.ttf') format('truetype');}
+:root{--navy:#0c162c;--gold:#c49e4a;--green:#6ee6a0;--grey:#808484;--card:#8f9290}
+*{box-sizing:border-box}body{margin:0;background:var(--navy);color:#e8eae4;font-family:'Archivo',sans-serif;line-height:1.65}
+h1,h2{font-family:'Briem Hand',cursive;color:var(--gold)}
+.hero{min-height:100vh;display:flex;flex-direction:column}
+.hero img.intro{width:100%;height:52vh;object-fit:cover;display:block}
+.hero .plate{padding:1.2rem 6vw 1.6rem;border-bottom:5px solid var(--gold)}
+.logo{width:150px}
+main{padding:0 6vw 3rem;max-width:1080px;margin:0 auto;border-top:5px solid var(--gold)}
+nav{display:flex;gap:.9rem;flex-wrap:wrap;margin:1rem 0}
+.stubbtn{display:inline-block;background:var(--card);color:var(--navy);font-family:'Briem Hand',cursive;font-size:1.05rem;text-decoration:none;padding:.6rem 1.2rem .6rem 2rem;clip-path:polygon(0 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%);position:relative;transition:transform .12s}
+.stubbtn:before{content:'';position:absolute;left:9px;top:50%;width:13px;height:13px;margin-top:-7px;border-radius:50%;background:var(--navy)}
+.stubbtn:hover{transform:translateY(-3px) rotate(-.5deg)}
+.stubbtn:hover:before{background:var(--green)}
+.stubbtn:active{transform:none}
+.stubbtn:focus-visible{outline:3px solid var(--gold);outline-offset:-6px}
+.bookpage{background:linear-gradient(180deg,#838783,#787c78);color:#101828;padding:.4rem 1.4rem 1.2rem;margin:1.6rem 0;position:relative;background-image:repeating-linear-gradient(180deg,transparent 0 30px,rgba(110,230,160,.14) 30px 31px)}
+.bookpage:before{content:'';position:absolute;left:12px;top:12px;width:15px;height:15px;border-radius:50%;background:var(--navy)}
+.bookpage h2{border-bottom:2px solid rgba(196,158,74,.7);padding-bottom:.3rem;margin-left:1.4rem}
+.bookpage p,.bookpage pre{margin-left:1.4rem}
+.bookpage pre{background:var(--navy);color:#e8eae4;padding:1rem;overflow-x:auto}
+.stub{border:2px solid rgba(12,22,44,.5);padding:.5rem 1rem;margin:.7rem 0 .7rem 1.4rem;background:rgba(242,232,205,.16)}
+a{color:var(--gold)}a:before{content:'';display:inline-block;width:9px;height:15px;border:3px solid var(--gold);border-radius:50%;margin-right:.5em;vertical-align:-2px;transition:transform .2s}
+a:hover:before{transform:rotate(120deg)}
+.stubbtn:before{content:''}
+.chain{height:20px;margin:2rem 0;background:repeating-radial-gradient(ellipse 22px 13px at 16px 50%,transparent 0 7px,var(--grey) 7px 10px,transparent 10px 32px)}
+.notice{border:2px solid var(--green);padding:.8rem 1.1rem;margin-left:1.4rem;background:rgba(12,22,44,.28);color:#eef2ea}
+footer{padding:1rem 6vw 2.4rem;max-width:1080px;margin:0 auto;border-top:5px solid var(--gold)}
 </style>
 </head>
-<body class="layout-split">
-<!-- This page exists for analyze-ioc-extractor alone: the layout (split-hero),
-     the colors, and the type were picked for this project, not
-     shared with the other project pages. The code block below is
-     copied from the file it names, line for line. If it looks
-     plain, that is because the project is plain, and I would
-     rather the page match the project than dress it up. The one
-     thing I will not do here is oversell: what this project does
-     not do is stated on the page, not hidden from it. -->
+<body>
 <header class="hero">
-  <img class="logo" src="assets/logo.png" alt="Analyze Ioc Extractor logo">
-  <img class="banner" src="assets/banner.png" alt="">
-  <h1>Analyze Ioc Extractor</h1>
-  <p class="mono"><a href="https://github.com/ShadowGuard-AI/analyze-ioc-extractor">github.com/ShadowGuard-AI/analyze-ioc-extractor</a></p>
+<img class="intro" src="assets/intro-banner.png" alt="The pier before the window opens: wet boards, gull feathers, an anchor chain, rolled charts, a dark ticket booth with lamp glow at its window seams, and a ferry at anchor with dark windows, no text">
+<div class="plate">
+<img class="logo" src="assets/logo.png" alt="Brass ticket punch with open handles on midnight navy, a phosphor green punched hole in the stub held in its jaws, and a fanned stack of punched stubs beneath">
+<h1>analyze-ioc-extractor</h1>
+<p>The booth counter at working hours. A rope gold rule runs along the counter edge from the first panel to the last.</p>
+<nav>
+<a class="stubbtn" href="#work">The work of the office</a>
+<a class="stubbtn" href="#crossing">Reporting for the crossing</a>
+<a class="stubbtn" href="#shapes">The punch shapes</a>
+<a class="stubbtn" href="#book">The stub book</a>
+</nav>
+</div>
+<img src="assets/banner.png" alt="Lamplit ticket booth at night with the project name painted in gold across its glowing green window, the brass punch and punched stubs large on the counter, and one lit ferry on the harbour behind" style="width:100%;display:block">
 </header>
-
 <main>
-  <section class="rail">
-    <nav aria-label="on this page">
-      <p class="mono"><a href="#run">Run it</a><br>
-      <a href="#files">The files</a><br>
-      <a href="#sheets">The sheets</a><br>
-      <a href="https://github.com/ShadowGuard-AI/analyze-ioc-extractor">The repo</a></p>
-    </nav>
-    <div>
-      <p class="lede">Analyze Ioc Extractor is one of my projects. The README in the repo is short, so this page sticks to what the files themselves show.</p>
-      <div class="grid">
-        <div class="card pop"><h3>What it is</h3>
-          <p>Analyze Ioc Extractor: 5 files, 175 counted
-          lines across Python 154, Markdown 20, Text 1. One job, done in the
-          open, in files you can read.</p></div>
-        <div class="card pop"><h3>The biggest piece</h3>
-          <p><code>main.py</code> carries the most
-          lines. If the project grows, that file is where the growth
-          lands first, for better or worse.</p></div>
-        <div class="card pop"><h3>The honest gap</h3>
-          <p>No test files yet. That is the honest gap, and the roadmap in the visuals folder says what the first one should cover.</p></div>
-      </div>
-      <section id="run">
-        <h2>Run it</h2>
-        <p>The repo README has the exact commands for this one. The
-        shape is the shape for most of my projects: clone it, read the
-        top file first so you know what will happen, then run it on
-        something you do not mind breaking.</p>
-        <p class="mono">$ git clone https://github.com/ShadowGuard-AI/analyze-ioc-extractor.git<br>$ cd analyze-ioc-extractor</p>
-      </section>
-      
-  <section aria-label="real code">
-    <h2>The code, as it sits in the repo</h2>
-    <p>From <code>main.py</code>, line 20 on. I did
-    not tidy it for the page. What you see is what the file has.</p>
-    <pre class="code"><code>
+<section class="bookpage" id="work"><h2>Panel one: the work of the office, it extracts</h2>
+<p>analyze-ioc-extractor extracts Indicators of Compromise such as IP addresses, URLs, and email addresses from a text file or standard input, using regular expressions.</p>
+<p>The word extracts holds the heading position because this tool pulls its finds out of text put in front of it. Nothing is fetched, queried, or looked up anywhere else.</p>
+</section>
+<div class="chain"></div>
+<section class="bookpage" id="crossing"><h2>Panel two: reporting for the crossing</h2>
+<pre>git clone https://github.com/ShadowGuard-AI/analyze-ioc-extractor
+cd analyze-ioc-extractor
+pip install -r requirements.txt
 
-def setup_argparse():
-    &quot;&quot;&quot;
-    Sets up the argument parser for the command line interface.
-
-    Returns:
-        argparse.ArgumentParser: The argument parser object.
-    &quot;&quot;&quot;
-    parser = argparse.ArgumentParser(description=&quot;Extracts Indicators of Compromise (IOCs) from text.&quot;)
-    parser.add_argument(&quot;input&quot;, nargs=&quot;?&quot;, type=str, default=&quot;-&quot;,
-                        help=&quot;Input file or &#x27;-&#x27; for stdin (default: stdin)&quot;)
-    parser.add_argument(&quot;-o&quot;, &quot;--output&quot;, type=str, help=&quot;Output file (CSV format)&quot;, required=False)
-    parser.add_argument(&quot;-i&quot;, &quot;--ioc-type&quot;, type=str, choices=[&#x27;ip&#x27;, &#x27;url&#x27;, &#x27;email&#x27;, &#x27;md5&#x27;, &#x27;sha1&#x27;, &#x27;sha256&#x27;, &#x27;domain&#x27;, &#x27;all&#x27;],
-                        default=&#x27;all&#x27;, help=&quot;Type of IOC to extract (default: all)&quot;)
-    parser.add_argument(&quot;-v&quot;, &quot;--verbose&quot;, action=&quot;store_true&quot;, help=&quot;Enable verbose output (logging)&quot;)
-    parser.add_argument(&quot;-q&quot;, &quot;--quiet&quot;, action=&quot;store_true&quot;, help=&quot;Suppress all output except errors&quot;)
-
-    return parser
-
-
-def extract_iocs(text, ioc_type=&#x27;all&#x27;):</code></pre>
-  </section>
-      <section id="files">
-        <h2>The files that matter</h2>
-        <table><tr><th>File</th><th>Lines</th></tr>
-        <tr><td><code>main.py</code></td><td>154</td></tr>
-        <tr><td><code>README.md</code></td><td>20</td></tr>
-        <tr><td><code>requirements.txt</code></td><td>1</td></tr>
-        <tr><td><code>banner.png</code></td><td>0</td></tr>
-        <tr><td><code>logo.png</code></td><td>0</td></tr>
-        </table>
-        <p>Names doing the work: <span class="mono">setup_argparse, extract_iocs, main</span>.</p>
-      </section>
-      <section id="sheets">
-        <h2>Drawn by hand</h2>
-        <p>I sketch my projects on notebook paper so I have to
-        understand them well enough to draw them. The full set,
-        with the counts and how they were counted, is the
-        <a href="https://github.com/ShadowGuard-AI/analyze-ioc-extractor/tree/main/analyze-ioc-extractor-Visuals">analyze-ioc-extractor-Visuals</a>
-        folder in the repo. Nothing is drawn over the binder holes.
-        That is a rule, not a style.</p>
-        <div class="shots">
-          <img src="assets/architecture.png" alt="Hand drawn architecture sheet for Analyze Ioc Extractor">
-          <img src="assets/flowchart.png" alt="Hand drawn flowchart sheet for Analyze Ioc Extractor">
-          <img src="assets/product-map.png" alt="Hand drawn product map sheet for Analyze Ioc Extractor">
-        </div>
-      </section>
-    </div>
-  </section>
+python3 main.py [INPUT] [-o OUTPUT] [-i IOC_TYPE] [-v] [-q]</pre>
+<p>INPUT is explained exactly as the source explains it: an input file, or a dash for standard input, with standard input as the default.</p>
+</section>
+<div class="chain"></div>
+<section class="bookpage" id="shapes"><h2>Panel three: the punch shapes, one stub per control</h2>
+<div class="stub"><p><code>-h</code> shows the help message and exits.</p></div>
+<div class="stub"><p><code>-o</code>, also written <code>--output</code>, names an output file in CSV format.</p></div>
+<div class="stub"><p><code>-i</code>, also written <code>--ioc-type</code>, chooses the kind of IOC to extract: ip, url, email, md5, sha1, sha256, domain, or all, with all as the default.</p></div>
+<div class="stub"><p><code>-v</code>, also written <code>--verbose</code>, enables verbose output, described in the source as logging.</p></div>
+<div class="stub"><p><code>-q</code>, also written <code>--quiet</code>, suppresses all output except errors.</p></div>
+<p>Each stub is punched with its own shape, and no stub borrows another stub's wording.</p>
+</section>
+<div class="chain"></div>
+<section class="bookpage" id="book"><h2>Panel four: the stub book, verified behaviour entered by hand</h2>
+<p>A sample containing an IP address, a URL, an email address, an MD5 hash, and a domain produced rows for each of those types. With <code>-i ip</code>, only the IP row was produced. With <code>-o</code>, the CSV carries two columns, ioc_type and ioc_value. Reading from standard input with a dash works. A missing input file exits with code 1.</p>
+<div class="notice"><p>Caution, given its full weight: the URL pattern also matches bare domains and bare IP addresses, so a url row is a pattern match, not a validated URL.</p></div>
+<p><a href="https://github.com/ShadowGuard-AI/analyze-ioc-extractor">The repository on GitHub</a></p>
+</section>
 </main>
-<footer>
-  <p>Analyze Ioc Extractor is one of my projects. This page was written
-  from the repo itself on 2026-10-30: the counts are the
-  repo's counts, the code is the repo's code, and the gaps are the
-  repo's gaps.</p>
-</footer>
+<footer><p>Licence: MIT License, see LICENSE. Theme: the night ferry ticket office. Type: Briem Hand for headings, Archivo for reading, both SIL Open Font License 1.1. Lettering reference Brush Hand New was reference only and is not embedded.</p></footer>
 </body>
 </html>
