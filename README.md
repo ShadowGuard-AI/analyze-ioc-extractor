@@ -1,11 +1,12 @@
-![The pier before the window opens: wet boards, gull feathers, anchor chain, rolled charts, a dark booth with lamp glow at its seams, and a ferry at anchor, no text](intro-banner.png)
+![Steel gold pan close up at the water's edge, the last of the gravel washed to one side and a single gold flake left settled and bright on the bare steel](intro-banner.png)
 
 # analyze-ioc-extractor
 
-![Lamplit ticket booth with the project name painted in gold on its glowing window, the brass punch large on the counter, and one lit ferry on the harbour](banner.png)
+![Wooden sluice run along a shallow river, grey gravel washing in stages down its riffles, a steel pan resting in the shallows at the run's end with washed gravel gathered in it and one small gold flake at its rim](banner.png)
+
+<p align="center"><img src="logo.png" alt="Dark steel gold pan from directly above, grey gravel and green brown water swirling in a ring inside it and one small gold flake settled bright at the pan's rim" width="180"></p>
 
 ![Inside the booth scene: a lit ferry crosses slowly, the brass punch closes once on a fresh stub, flags stir, and a gull feather settles](scene.svg)
-
 
 # analyze-ioc-extractor
 Extracts Indicators of Compromise (IOCs) such as IP addresses, URLs, and email addresses from a text file or standard input, using regular expressions.

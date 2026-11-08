@@ -3,86 +3,74 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>analyze-ioc-extractor: The Night Ferry Ticket Office</title>
-<meta name="description" content="analyze-ioc-extractor extracts Indicators of Compromise such as IP addresses, URLs, and email addresses from a text file or standard input, using regular expressions.">
+<title>analyze-ioc-extractor: The Sluice Run</title>
 <style>
-@font-face{font-family:'Briem Hand';src:url('fonts/BriemHand.ttf') format('truetype');}
-@font-face{font-family:'Archivo';src:url('fonts/Archivo.ttf') format('truetype');}
-:root{--navy:#0c162c;--gold:#c49e4a;--green:#6ee6a0;--grey:#808484;--card:#8f9290}
-*{box-sizing:border-box}body{margin:0;background:var(--navy);color:#e8eae4;font-family:'Archivo',sans-serif;line-height:1.65}
-h1,h2{font-family:'Briem Hand',cursive;color:var(--gold)}
-.hero{min-height:100vh;display:flex;flex-direction:column}
-.hero img.intro{width:100%;height:52vh;object-fit:cover;display:block}
-.hero .plate{padding:1.2rem 6vw 1.6rem;border-bottom:5px solid var(--gold)}
-.logo{width:150px}
-main{padding:0 6vw 3rem;max-width:1080px;margin:0 auto;border-top:5px solid var(--gold)}
-nav{display:flex;gap:.9rem;flex-wrap:wrap;margin:1rem 0}
-.stubbtn{display:inline-block;background:var(--card);color:var(--navy);font-family:'Briem Hand',cursive;font-size:1.05rem;text-decoration:none;padding:.6rem 1.2rem .6rem 2rem;clip-path:polygon(0 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%);position:relative;transition:transform .12s}
-.stubbtn:before{content:'';position:absolute;left:9px;top:50%;width:13px;height:13px;margin-top:-7px;border-radius:50%;background:var(--navy)}
-.stubbtn:hover{transform:translateY(-3px) rotate(-.5deg)}
-.stubbtn:hover:before{background:var(--green)}
-.stubbtn:active{transform:none}
-.stubbtn:focus-visible{outline:3px solid var(--gold);outline-offset:-6px}
-.bookpage{background:linear-gradient(180deg,#838783,#787c78);color:#101828;padding:.4rem 1.4rem 1.2rem;margin:1.6rem 0;position:relative;background-image:repeating-linear-gradient(180deg,transparent 0 30px,rgba(110,230,160,.14) 30px 31px)}
-.bookpage:before{content:'';position:absolute;left:12px;top:12px;width:15px;height:15px;border-radius:50%;background:var(--navy)}
-.bookpage h2{border-bottom:2px solid rgba(196,158,74,.7);padding-bottom:.3rem;margin-left:1.4rem}
-.bookpage p,.bookpage pre{margin-left:1.4rem}
-.bookpage pre{background:var(--navy);color:#e8eae4;padding:1rem;overflow-x:auto}
-.stub{border:2px solid rgba(12,22,44,.5);padding:.5rem 1rem;margin:.7rem 0 .7rem 1.4rem;background:rgba(242,232,205,.16)}
-a{color:var(--gold)}a:before{content:'';display:inline-block;width:9px;height:15px;border:3px solid var(--gold);border-radius:50%;margin-right:.5em;vertical-align:-2px;transition:transform .2s}
-a:hover:before{transform:rotate(120deg)}
-.stubbtn:before{content:''}
-.chain{height:20px;margin:2rem 0;background:repeating-radial-gradient(ellipse 22px 13px at 16px 50%,transparent 0 7px,var(--grey) 7px 10px,transparent 10px 32px)}
-.notice{border:2px solid var(--green);padding:.8rem 1.1rem;margin-left:1.4rem;background:rgba(12,22,44,.28);color:#eef2ea}
-footer{padding:1rem 6vw 2.4rem;max-width:1080px;margin:0 auto;border-top:5px solid var(--gold)}
+@font-face { font-family: 'Rammetto One'; src: url('fonts/RammettoOne-400.woff2') format('woff2'); font-weight: 400; }
+@font-face { font-family: 'Nunito Sans'; src: url('fonts/NunitoSans-400.woff2') format('woff2'); font-weight: 400; }
+@font-face { font-family: 'Nunito Sans'; src: url('fonts/NunitoSans-700.woff2') format('woff2'); font-weight: 700; }
+:root { --gravel: #55534e; --steel: #2e3236; --water: #5c6650; --gold: #c99612; --paper: #f2f0ea; --ink: #26281f; }
+* { box-sizing: border-box; }
+body { margin: 0; font-family: 'Nunito Sans', sans-serif; background: var(--paper); color: var(--ink); line-height: 1.6; }
+header.top { display: flex; justify-content: space-between; align-items: center; padding: 16px 28px; background: var(--steel); color: #e9e6da; border-bottom: 5px solid var(--gold); }
+.wordmark { font-weight: 700; letter-spacing: .03em; }
+.flake { color: #ecd28a; font-size: .85rem; letter-spacing: .12em; text-transform: uppercase; }
+.hero { text-align: center; padding: 50px 22px 8px; }
+.hero img.logo { width: 180px; height: auto; border: 5px solid var(--steel); border-radius: 50%; }
+h1 { font-family: 'Rammetto One', sans-serif; font-weight: 400; font-size: 2.5rem; margin: 18px 0 6px; color: var(--steel); }
+h2 { font-family: 'Rammetto One', sans-serif; font-weight: 400; color: var(--steel); border-bottom: 3px solid #cfcaba; padding-bottom: 5px; margin-top: 38px; }
+.tag { max-width: 43rem; margin: 0 auto; }
+.buttons { margin: 22px 0 6px; }
+.buttons a { display: inline-block; margin: 4px; padding: 11px 22px; background: var(--water); color: #fff; font-weight: 700; text-decoration: none; border-radius: 4px; }
+.buttons a.alt { background: transparent; color: var(--steel); border: 2px solid var(--steel); }
+figure.wide { max-width: 1020px; margin: 24px auto; padding: 0 18px; }
+figure.wide img { width: 100%; height: auto; display: block; border: 1px solid #cfcaba; }
+figcaption { color: #6d6a5e; font-size: .9rem; padding-top: 8px; text-align: center; }
+.strip { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; padding: 20px 18px; }
+.strip div { background: #fff; border: 1px solid #cfcaba; border-top: 4px solid var(--gold); padding: 13px 18px; min-width: 180px; text-align: center; }
+.strip b { display: block; font-family: 'Rammetto One', sans-serif; font-weight: 400; color: var(--steel); font-size: 1.05rem; }
+main { max-width: 880px; margin: 0 auto; padding: 8px 22px 30px; }
+table { border-collapse: collapse; width: 100%; }
+th, td { border: 1px solid #cfcaba; padding: 8px 12px; text-align: left; vertical-align: top; }
+th { background: var(--steel); color: #e9e6da; }
+code { background: #e3ddca; padding: 1px 6px; border-radius: 3px; }
+.hold { border-left: 5px solid var(--gold); background: #f4ecd2; padding: 13px 18px; }
+footer { text-align: center; padding: 24px 18px 32px; color: #6d6a5e; font-size: .9rem; border-top: 5px solid var(--gold); margin-top: 28px; }
 </style>
 </head>
 <body>
-<header class="hero">
-<img class="intro" src="assets/intro-banner.png" alt="The pier before the window opens: wet boards, gull feathers, an anchor chain, rolled charts, a dark ticket booth with lamp glow at its window seams, and a ferry at anchor with dark windows, no text">
-<div class="plate">
-<img class="logo" src="assets/logo.png" alt="Brass ticket punch with open handles on midnight navy, a phosphor green punched hole in the stub held in its jaws, and a fanned stack of punched stubs beneath">
-<h1>analyze-ioc-extractor</h1>
-<p>The booth counter at working hours. A rope gold rule runs along the counter edge from the first panel to the last.</p>
-<nav>
-<a class="stubbtn" href="#work">The work of the office</a>
-<a class="stubbtn" href="#crossing">Reporting for the crossing</a>
-<a class="stubbtn" href="#shapes">The punch shapes</a>
-<a class="stubbtn" href="#book">The stub book</a>
-</nav>
+<header class="top"><span class="wordmark">analyze-ioc-extractor</span><span class="flake">What settles stays</span></header>
+<section class="hero">
+<img class="logo" src="assets/logo.png" alt="Dark steel gold pan from directly above, grey gravel and green brown water swirling in a ring inside it and one small gold flake settled bright at the pan's rim">
+<h1>The Sluice Run</h1>
+<p class="tag">Extracts Indicators of Compromise (IOCs) such as IP addresses, URLs, and email addresses from a text file or standard input, using regular expressions. A sluice washes a whole stream of gravel through and keeps only the few heavy pieces that settle; this tool washes a file of text through its patterns and keeps only the indicators.</p>
+<p class="buttons"><a href="https://github.com/ShadowGuard-AI/analyze-ioc-extractor">View on GitHub</a> <a class="alt" href="https://github.com/ShadowGuard-AI/analyze-ioc-extractor#readme">Read the README</a></p>
+</section>
+<figure class="wide"><img src="assets/intro-banner.png" alt="Steel gold pan close up at the water's edge, the last of the gravel washed to one side and a single gold flake left settled and bright on the bare steel"><figcaption>The pan close up: the gravel washed away, one flake left on the bare steel.</figcaption></figure>
+<div class="strip">
+<div><b>Seven types</b>plus all, the default</div>
+<div><b>Two columns</b>ioc_type and ioc_value</div>
+<div><b>File or stdin</b>input either way</div>
+<div><b>pandas</b>the one requirement</div>
 </div>
-<img src="assets/banner.png" alt="Lamplit ticket booth at night with the project name painted in gold across its glowing green window, the brass punch and punched stubs large on the counter, and one lit ferry on the harbour behind" style="width:100%;display:block">
-</header>
 <main>
-<section class="bookpage" id="work"><h2>Panel one: the work of the office, it extracts</h2>
-<p>analyze-ioc-extractor extracts Indicators of Compromise such as IP addresses, URLs, and email addresses from a text file or standard input, using regular expressions.</p>
-<p>The word extracts holds the heading position because this tool pulls its finds out of text put in front of it. Nothing is fetched, queried, or looked up anywhere else.</p>
-</section>
-<div class="chain"></div>
-<section class="bookpage" id="crossing"><h2>Panel two: reporting for the crossing</h2>
-<pre>git clone https://github.com/ShadowGuard-AI/analyze-ioc-extractor
-cd analyze-ioc-extractor
-pip install -r requirements.txt
-
-python3 main.py [INPUT] [-o OUTPUT] [-i IOC_TYPE] [-v] [-q]</pre>
-<p>INPUT is explained exactly as the source explains it: an input file, or a dash for standard input, with standard input as the default.</p>
-</section>
-<div class="chain"></div>
-<section class="bookpage" id="shapes"><h2>Panel three: the punch shapes, one stub per control</h2>
-<div class="stub"><p><code>-h</code> shows the help message and exits.</p></div>
-<div class="stub"><p><code>-o</code>, also written <code>--output</code>, names an output file in CSV format.</p></div>
-<div class="stub"><p><code>-i</code>, also written <code>--ioc-type</code>, chooses the kind of IOC to extract: ip, url, email, md5, sha1, sha256, domain, or all, with all as the default.</p></div>
-<div class="stub"><p><code>-v</code>, also written <code>--verbose</code>, enables verbose output, described in the source as logging.</p></div>
-<div class="stub"><p><code>-q</code>, also written <code>--quiet</code>, suppresses all output except errors.</p></div>
-<p>Each stub is punched with its own shape, and no stub borrows another stub's wording.</p>
-</section>
-<div class="chain"></div>
-<section class="bookpage" id="book"><h2>Panel four: the stub book, verified behaviour entered by hand</h2>
-<p>A sample containing an IP address, a URL, an email address, an MD5 hash, and a domain produced rows for each of those types. With <code>-i ip</code>, only the IP row was produced. With <code>-o</code>, the CSV carries two columns, ioc_type and ioc_value. Reading from standard input with a dash works. A missing input file exits with code 1.</p>
-<div class="notice"><p>Caution, given its full weight: the URL pattern also matches bare domains and bare IP addresses, so a url row is a pattern match, not a validated URL.</p></div>
-<p><a href="https://github.com/ShadowGuard-AI/analyze-ioc-extractor">The repository on GitHub</a></p>
-</section>
+<h2>What it does</h2>
+<p>The extractor reads a text file, or standard input, and pulls out the indicators hiding in it: IP addresses, URLs, email addresses, MD5, SHA1 and SHA256 hashes, and domains. Usage, as the README gives it: <code>python3 main.py [INPUT] [-o OUTPUT] [-i IOC_TYPE] [-v] [-q]</code>. Its one requirement is <code>pandas&gt;=2.1.0</code>.</p>
+<figure class="wide" style="padding:0;margin:18px 0;"><img src="assets/banner.png" alt="Wooden sluice run along a shallow river, grey gravel washing in stages down its riffles, a steel pan resting in the shallows at the run's end with washed gravel gathered in it and one small gold flake at its rim"></figure>
+<h2>Parameters</h2>
+<table>
+<tr><th>Parameter</th><th>What the README says</th></tr>
+<tr><td><code>INPUT</code></td><td>Input file, or <code>-</code> for stdin. Default: stdin</td></tr>
+<tr><td><code>-h</code></td><td>Show help message and exit</td></tr>
+<tr><td><code>-o</code>, <code>--output</code></td><td>Output file in CSV format</td></tr>
+<tr><td><code>-i</code>, <code>--ioc-type</code></td><td>Type of IOC to extract: <code>ip</code>, <code>url</code>, <code>email</code>, <code>md5</code>, <code>sha1</code>, <code>sha256</code>, <code>domain</code>, or <code>all</code>. Default: <code>all</code></td></tr>
+<tr><td><code>-v</code>, <code>--verbose</code></td><td>Enable verbose output (logging)</td></tr>
+<tr><td><code>-q</code>, <code>--quiet</code></td><td>Suppress all output except errors</td></tr>
+</table>
+<h2>Verified behavior</h2>
+<p>A sample containing an IP address, a URL, an email address, an MD5 hash, and a domain produced rows for each of those types. With <code>-i ip</code>, only the IP row was produced. With <code>-o</code>, the CSV has two columns, <code>ioc_type</code> and <code>ioc_value</code>. Reading from stdin with <code>-</code> works.</p>
+<h2>Stated limits</h2>
+<div class="hold"><p>Note on the matches: the URL pattern also matches bare domains and bare IP addresses, so a <code>url</code> row is a pattern match, not a validated URL. A missing input file exits 1. MIT License, see LICENSE.</p></div>
 </main>
-<footer><p>Licence: MIT License, see LICENSE. Theme: the night ferry ticket office. Type: Briem Hand for headings, Archivo for reading, both SIL Open Font License 1.1. Lettering reference Brush Hand New was reference only and is not embedded.</p></footer>
+<footer>analyze-ioc-extractor, washed and kept. Fonts: Rammetto One and Nunito Sans, self-hosted under the SIL Open Font License.</footer>
 </body>
 </html>
