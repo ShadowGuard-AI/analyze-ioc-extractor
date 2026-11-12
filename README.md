@@ -7,12 +7,10 @@
 <p align="center"><img src="logo.png" alt="Dark steel gold pan from directly above, grey gravel and green brown water swirling in a ring inside it and one small gold flake settled bright at the pan's rim" width="180"></p>
 
 ![Inside the booth scene: a lit ferry crosses slowly, the brass punch closes once on a fresh stub, flags stir, and a gull feather settles](scene.svg)
-
-# analyze-ioc-extractor
 Extracts Indicators of Compromise (IOCs) such as IP addresses, URLs, and email addresses from a text file or standard input, using regular expressions.
 
 ## Install
-```
+```sh
 git clone https://github.com/ShadowGuard-AI/analyze-ioc-extractor
 cd analyze-ioc-extractor
 pip install -r requirements.txt
@@ -22,7 +20,7 @@ pip install -r requirements.txt
 ![Major section divider](sep-heavy.svg)
 
 ## Usage
-```
+```sh
 python3 main.py [INPUT] [-o OUTPUT] [-i IOC_TYPE] [-v] [-q]
 ```
 
@@ -52,7 +50,7 @@ python3 main.py [INPUT] [-o OUTPUT] [-i IOC_TYPE] [-v] [-q]
 ![Minor section divider](sep-light.svg)
 
 ## License
-MIT License, see LICENSE.
+MIT License, see [LICENSE](LICENSE).
 
 > Counter notice: the URL pattern also matches bare domains and bare IP addresses, so a url row is a pattern match, not a validated URL.
 > Counter notice: a missing input file exits with code 1.
